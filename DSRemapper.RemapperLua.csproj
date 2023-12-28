@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	  <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+	  <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+	  <BaseOutputPath>..\Plugins\LuaInterpreter\$(Configuration)</BaseOutputPath>
+	  <OutputPath>..\Plugins\LuaInterpreter\$(Configuration)</OutputPath>
+	  <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
+	  <Title>$(AssemblyName) - DSR-Plugin</Title>
+	  <Authors>Oscar-Wohlfarhrt</Authors>
+	  <Description>Plugin of DSRemapper</Description>
+	  <Copyright>Copyright (c) 2023 Oscar Andrés Wohlfarhrt</Copyright>
+	  <RepositoryType>git</RepositoryType>
+	  <PackageProjectUrl>https://github.com/Oscar-Wohlfarhrt/DSRemapper</PackageProjectUrl>
+	  <RepositoryUrl>https://github.com/Oscar-Wohlfarhrt/DSRemapper</RepositoryUrl>
+	  <AssemblyVersion>0.1.0</AssemblyVersion>
+	  <FileVersion>$(AssemblyVersion)-pre-alpha</FileVersion>
+	  <Version>$(FileVersion)</Version>
+	  <GenerateDocumentationFile>True</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DSRemapper.Core" Version="0.2.2-beta" />
+    <PackageReference Include="DSRemapper.DSROutput" Version="0.2.0-beta" />
+    <PackageReference Include="DSRemapper.MouseKeyboardOutput" Version="0.1.0-pre-alpha" />
+    <PackageReference Include="MoonSharp" Version="2.0.0">
+    </PackageReference>
+  </ItemGroup>
+
+</Project>
