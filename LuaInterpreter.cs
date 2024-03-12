@@ -146,6 +146,7 @@ namespace DSRemapper.RemapperLua
         public void Dispose()
         {
             emuControllers.DisconnectAll();
+            emuControllers.Dispose();
             GC.SuppressFinalize(this);
         }
     }
