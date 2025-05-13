@@ -20,6 +20,7 @@ namespace DSRemapper.RemapperLua
         static LuaInterpreter()
         {
             UserData.RegisterType<IDSRInputReport>(InteropAccessMode.BackgroundOptimized);
+            UserData.RegisterType<IDSROutputReport>(InteropAccessMode.BackgroundOptimized);
             UserData.RegisterType<DSRTouch>(InteropAccessMode.BackgroundOptimized);
             UserData.RegisterType<DSRTouch[]>(InteropAccessMode.BackgroundOptimized);
             UserData.RegisterType<DSRLight>(InteropAccessMode.BackgroundOptimized);
@@ -108,16 +109,16 @@ namespace DSRemapper.RemapperLua
             }
         }
         /// <inheritdoc/>
-        public DefaultDSROutputReport Remap(IDSRInputReport report)
+        public IDSROutputReport Remap(IDSRInputReport report)
         {
-            DefaultDSROutputReport outReport = new();
+            IDSROutputReport outReport = new DefaultDSROutputReport();
             try
             {
                 script.Globals["deltaTime"] = sw.Elapsed.TotalSeconds;
                 sw.Restart();
                 if (luaRemap != null)
                     script.Call(luaRemap,report);
-                DefaultDSROutputReport? feedback = (DefaultDSROutputReport?)script.Globals["inputFB"];
+                IDSROutputReport? feedback = (IDSROutputReport?)script.Globals["inputFB"];
                 if(feedback!=null)
                     outReport = feedback;
             }
