@@ -7,7 +7,7 @@ using MoonSharp.Interpreter;
 using System.Diagnostics;
 using System.Numerics;
 using DSRemapper.MouseKeyboardOutput;
-using FireLibs.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace DSRemapper.RemapperLua
 {
