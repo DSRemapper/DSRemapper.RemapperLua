@@ -56,18 +56,18 @@ namespace DSRemapper.RemapperLua
         private Script script = new();
         private Closure? luaRemap = null;
         /// <inheritdoc/>
-        public event RemapperEventArgs? OnLog;
+        public event DeviceConsoleEventArgs? OnDeviceConsole;
         private string lastMessage = "";
 
         private readonly DSROutput.DSROutput emuControllers = new();
 
-        private readonly Stopwatch sw = new();
+        DSRLogger logger;
         /// <summary>
         /// LuaInterpreter class constructor
         /// </summary>
-        public LuaInterpreter()
+        public LuaInterpreter(DSRLogger logger)
         {
-
+            this.logger = logger;
         }
         /// <inheritdoc/>
         public void SetScript(string file)
@@ -95,27 +95,32 @@ namespace DSRemapper.RemapperLua
                 Closure? remapFunction = (Closure)script.Globals["Remap"];
                 luaRemap = remapFunction;
                 if (remapFunction == null)
-                    OnLog?.Invoke(this, LogLevel.Warning, false, "No Remap function on the script");
+                {
+                    string msg = "No Remap function on the script";
+                    logger.LogWarning(msg);
+                    OnDeviceConsole?.Invoke(this, msg, LogLevel.Warning);
+                }
             }
             catch (InterpreterException e)
             {
                 luaRemap = null;
-                OnLog?.Invoke(this, LogLevel.Error, false, e.DecoratedMessage);
+                string msg = e.DecoratedMessage;
+                logger.LogError(msg);
+                OnDeviceConsole?.Invoke(this, msg, LogLevel.Error);
             }
             catch (Exception e)
             {
                 luaRemap = null;
-                OnLog?.Invoke(this, LogLevel.Error, false, e.Message);
+                logger.LogError(e.Message);
             }
         }
         /// <inheritdoc/>
-        public IDSROutputReport Remap(IDSRInputReport report)
+        public IDSROutputReport Remap(IDSRInputReport report, double deltaTime)
         {
             IDSROutputReport outReport = new DefaultDSROutputReport();
             try
             {
-                script.Globals["deltaTime"] = sw.Elapsed.TotalSeconds;
-                sw.Restart();
+                script.Globals["deltaTime"] = deltaTime;
                 if (luaRemap != null)
                     script.Call(luaRemap,report);
                 IDSROutputReport? feedback = (IDSROutputReport?)script.Globals["inputFB"];
@@ -125,14 +130,16 @@ namespace DSRemapper.RemapperLua
             catch (InterpreterException e)
             {
                 luaRemap = null;
-                OnLog?.Invoke(this,LogLevel.Error,false, e.DecoratedMessage);
+                string msg = e.DecoratedMessage;
+                logger.LogError(msg);
+                OnDeviceConsole?.Invoke(this, msg, LogLevel.Error);
             }
             catch (Exception e)
             {
                 if (lastMessage != e.Message)
                 {
                     lastMessage = e.Message;
-                    OnLog?.Invoke(this,LogLevel.Error,false, e.Message);
+                    logger.LogError(e.Message);
                 }
                 luaRemap = null;
             }
@@ -141,14 +148,14 @@ namespace DSRemapper.RemapperLua
         }
         private void ConsoleLog(string text)
         {
-            OnLog?.Invoke(this,LogLevel.None,true,text);
+            OnDeviceConsole?.Invoke(this,text,LogLevel.None);
         }
         /// <inheritdoc/>
         public void Dispose()
         {
             emuControllers.DisconnectAll();
             emuControllers.Dispose();
-            GC.SuppressFinalize(this);
+            //GC.SuppressFinalize(this);
         }
     }
 }
