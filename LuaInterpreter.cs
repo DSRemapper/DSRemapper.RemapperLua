@@ -21,12 +21,14 @@ namespace DSRemapper.RemapperLua
         {
             UserData.RegisterType<IDSRInputReport>(InteropAccessMode.BackgroundOptimized);
             UserData.RegisterType<IDSROutputReport>(InteropAccessMode.BackgroundOptimized);
+            UserData.RegisterType<IDSRFeedback>(InteropAccessMode.BackgroundOptimized);
             UserData.RegisterType<DSRTouch>(InteropAccessMode.BackgroundOptimized);
             UserData.RegisterType<DSRTouch[]>(InteropAccessMode.BackgroundOptimized);
             UserData.RegisterType<DSRLight>(InteropAccessMode.BackgroundOptimized);
             UserData.RegisterType<DSRPov>(InteropAccessMode.BackgroundOptimized);
             UserData.RegisterType<DSRPov[]>(InteropAccessMode.BackgroundOptimized);
             UserData.RegisterType<DefaultDSROutputReport>(InteropAccessMode.BackgroundOptimized);
+            UserData.RegisterType<DefaultDSRFFBData>(InteropAccessMode.BackgroundOptimized);
 
             UserData.RegisterType(typeof(Utils), InteropAccessMode.BackgroundOptimized);
             UserData.RegisterExtensionType(typeof(Utils), InteropAccessMode.BackgroundOptimized);
@@ -50,6 +52,7 @@ namespace DSRemapper.RemapperLua
             UserData.RegisterType<ExpMovingAverageVector3>(InteropAccessMode.BackgroundOptimized);
 
             UserData.RegisterType<bool[]>(InteropAccessMode.BackgroundOptimized);
+            UserData.RegisterType<byte[]>(InteropAccessMode.BackgroundOptimized);
             UserData.RegisterType<float[]>(InteropAccessMode.BackgroundOptimized);
         }
 
@@ -78,6 +81,7 @@ namespace DSRemapper.RemapperLua
                 script=new Script();
 
                 script.Globals["CreatePov"] = ()=>new DSRPov();
+                script.Globals["CreateFFB"] = ()=>new DefaultDSRFFBData();
 
                 script.Globals["ConsoleLog"] = (Action<string>)ConsoleLog;
                 script.Globals["Emulated"] = emuControllers;
