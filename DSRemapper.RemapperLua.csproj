@@ -26,7 +26,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DSRemapper.Core" Version="0.4.1-beta" />
+    <PackageReference Include="DSRemapper.Core" Version="0.4.2-beta" />
     <PackageReference Include="DSRemapper.DSROutput" Version="0.2.1-beta" />
     <PackageReference Include="DSRemapper.MouseKeyboardOutput" Version="0.1.0-pre-alpha" />
     <PackageReference Include="MoonSharp" Version="2.0.0">

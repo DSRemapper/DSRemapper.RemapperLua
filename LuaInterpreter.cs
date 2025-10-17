@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Numerics;
 using DSRemapper.MouseKeyboardOutput;
 using Microsoft.Extensions.Logging;
+using System.Runtime.InteropServices;
 
 namespace DSRemapper.RemapperLua
 {
@@ -89,10 +90,13 @@ namespace DSRemapper.RemapperLua
                 script.Globals["inputFB"] = Utils.CreateOutputReport();
                 script.Globals["deltaTime"] = 0.0;
 
-                script.Globals["MKOut"] = new MKOutput();
-                script.Globals["Keys"] = new VirtualKeyShort();
-                script.Globals["Scans"] = new ScanCodeShort();
-                script.Globals["MButs"] = new MouseButton();
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    script.Globals["MKOut"] = new MKOutput();
+                    script.Globals["Keys"] = new VirtualKeyShort();
+                    script.Globals["Scans"] = new ScanCodeShort();
+                    script.Globals["MButs"] = new MouseButton();
+                }
 
                 script.DoFile(file);
 
