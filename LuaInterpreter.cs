@@ -9,6 +9,7 @@ using System.Numerics;
 using DSRemapper.MouseKeyboardOutput;
 using Microsoft.Extensions.Logging;
 using System.Runtime.InteropServices;
+using System.Reflection;
 
 namespace DSRemapper.RemapperLua
 {
@@ -74,12 +75,19 @@ namespace DSRemapper.RemapperLua
             this.logger = logger;
         }
         /// <inheritdoc/>
-        public void SetScript(string file)
+        public void SetScript(string file, Dictionary<string, Delegate> customMethods)
         {
             try
             {
                 emuControllers.DisconnectAll();
-                script=new Script();
+                script = new Script();
+
+                Table customFuncs = new(script);
+                foreach(var method in customMethods)
+                {
+                    customFuncs[method.Value.Method.Name] = method.Value;
+                }
+                script.Globals["CustomFuncs"] = customFuncs;
 
                 script.Globals["CreatePov"] = ()=>new DSRPov();
                 script.Globals["CreateFFB"] = ()=>new DefaultDSRFFBData();

@@ -18,7 +18,7 @@
 	  <RepositoryType>git</RepositoryType>
 	  <PackageProjectUrl>https://github.com/Oscar-Wohlfarhrt/DSRemapper</PackageProjectUrl>
 	  <RepositoryUrl>https://github.com/Oscar-Wohlfarhrt/DSRemapper</RepositoryUrl>
-	  <AssemblyVersion>0.3.0</AssemblyVersion>
+	  <AssemblyVersion>0.3.1</AssemblyVersion>
 	  <FileVersion>$(AssemblyVersion)-pre-alpha</FileVersion>
 	  <Version>$(FileVersion)</Version>
 	  <GenerateDocumentationFile>True</GenerateDocumentationFile>
@@ -26,7 +26,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DSRemapper.Core" Version="0.4.2-beta" />
+    <PackageReference Include="DSRemapper.Core" Version="0.4.3-beta" />
     <PackageReference Include="DSRemapper.DSROutput" Version="0.2.1-beta" />
     <PackageReference Include="DSRemapper.MouseKeyboardOutput" Version="0.1.0-pre-alpha" />
     <PackageReference Include="MoonSharp" Version="2.0.0">
