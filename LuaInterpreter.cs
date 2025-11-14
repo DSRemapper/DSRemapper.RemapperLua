@@ -10,6 +10,7 @@ using DSRemapper.MouseKeyboardOutput;
 using Microsoft.Extensions.Logging;
 using System.Runtime.InteropServices;
 using System.Reflection;
+using MoonSharp.Interpreter.Interop;
 
 namespace DSRemapper.RemapperLua
 {
@@ -22,7 +23,7 @@ namespace DSRemapper.RemapperLua
         static LuaInterpreter()
         {
             UserData.RegisterType<IDSRInputReport>(InteropAccessMode.BackgroundOptimized);
-            UserData.RegisterType<IDSROutputReport>(InteropAccessMode.BackgroundOptimized);
+            UserData.RegisterType<IDSROutputReport>(new IDSROutputControllerDescriptor());
             UserData.RegisterType<IDSRFeedback>(InteropAccessMode.BackgroundOptimized);
             UserData.RegisterType<DSRTouch>(InteropAccessMode.BackgroundOptimized);
             UserData.RegisterType<DSRTouch[]>(InteropAccessMode.BackgroundOptimized);
@@ -58,6 +59,43 @@ namespace DSRemapper.RemapperLua
             UserData.RegisterType<float[]>(InteropAccessMode.BackgroundOptimized);
         }
 
+        class IDSROutputControllerDescriptor : IUserDataDescriptor
+        {
+            public Type Type => typeof(IDSROutputController);
+            public string Name => "IDSROutputController";
+
+            private readonly StandardUserDataDescriptor defaultDescriptor = new(typeof(IDSROutputController), InteropAccessMode.BackgroundOptimized);
+            
+            public DynValue Index(Script script, object obj, DynValue index, bool isDirectIndexing)
+            {
+                DSRLogger.StaticLogInformation($"Requesting: {obj.GetType().FullName} | {obj is not IDSROutputController}");
+                
+                DynValue standardResult = defaultDescriptor.Index(script, obj, index, isDirectIndexing);
+
+                if (standardResult != null && standardResult.Type != DataType.Nil)
+                {
+                    return standardResult;
+                }
+
+                if (obj is not IDSROutputController controller)
+                    return standardResult;
+
+                string memberName = index.Type == DataType.String ? index.String : throw new ScriptRuntimeException("Index must be a string.");
+
+                if (controller.CustomMethods.TryGetValue(memberName, out Delegate? customDelegate))
+                    return DynValue.FromObject(script, customDelegate);
+                
+                return DynValue.Nil;
+            }
+
+            public bool SetIndex(Script script, object obj, DynValue index, DynValue value, bool isDirectIndexing) =>
+                defaultDescriptor.SetIndex(script, obj, index, value, isDirectIndexing);
+
+            public string AsString(object obj) => defaultDescriptor.AsString(obj);
+            public DynValue MetaIndex(Script script, object obj, string metaname) => defaultDescriptor.MetaIndex(script, obj, metaname);
+            public bool IsTypeCompatible(Type type, object obj) => defaultDescriptor.IsTypeCompatible(type,obj);
+        }
+
         private Script script = new();
         private Closure? luaRemap = null;
         /// <inheritdoc/>
@@ -82,12 +120,12 @@ namespace DSRemapper.RemapperLua
                 emuControllers.DisconnectAll();
                 script = new Script();
 
-                Table customFuncs = new(script);
+                /*Table customFuncs = new(script);
                 foreach(var method in customMethods)
                 {
                     customFuncs[method.Value.Method.Name] = method.Value;
-                }
-                script.Globals["CustomFuncs"] = customFuncs;
+                }*/
+                script.Globals["CustomFuncs"] = customMethods;
 
                 script.Globals["CreatePov"] = ()=>new DSRPov();
                 script.Globals["CreateFFB"] = ()=>new DefaultDSRFFBData();
